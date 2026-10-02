@@ -328,7 +328,7 @@
 
     <script>
         const SUPABASE_API_URL = 'https://pemxbkwlbwuedabsvpzf.supabase.co/rest/v1/movies';
-        const SUPABASE_ANON_KEY = 'ضع_هنا_مفتاح_ANON_KEY'; // استبدل هذا بالمفتاح الخاص بك
+        const SUPABASE_ANON_KEY = 'EyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpc3MiOiJzdXBhYmFzZSIsInJlZiI6InBlbXhia3dsYnd1ZWRhYnN2cHpmIiwicm9sZSI6ImFub24iLCJpYXQiOjE3OTA5MjI3NTcsImV4cCI6MjEwNjQ5ODc1N30.LEpbExsYNJSUmKe2JQfGbBGb_5wO3NdSJ5-Zr02kTBE';
 
         let likes = 124;
         let dislikes = 12;
@@ -375,7 +375,7 @@
                 });
             } catch (err) {
                 console.error('Fetch Error:', err);
-                grid.innerHTML = '<p style="color:#e11d48; text-align:center; grid-column: 1/-1;">تعذر تحميل الأفلام، تأكد من إضافة المفتاح (anon key) وإعدادات جدول Supabase.</p>';
+                grid.innerHTML = '<p style="color:#e11d48; text-align:center; grid-column: 1/-1;">تعذر تحميل الأفلام، تأكد من إعدادات جدول Supabase.</p>';
             }
         }
 
