@@ -294,7 +294,7 @@
         </div>
 
         <div class="video-container">
-            <iframe id="mainPlayer" src="" allowfullscreen allow="autoplay; encrypted-media"></iframe>
+            <iframe id="mainPlayer" src="" allowfullscreen allow="autoplay; encrypted-media; picture-in-picture" playsinline webkit-playsinline></iframe>
         </div>
 
         <div class="player-controls-bar">
@@ -312,84 +312,8 @@
 
     <h2 class="section-title">الأفلام الأكثر مشاهدة</h2>
 
-    <div class="movies-grid">
-        <!-- ولاد رزق 3 -->
-        <div class="movie-card" onclick="selectMovie(this, 'ولاد رزق 3: القاضية', 'https://vk.com/video_ext.php?oid=760447746&id=456239447')">
-            <div class="loading-overlay">جاري التشغيل...</div>
-            <img class="movie-poster" src="images/welad-rizk-3.jpg" alt="ولاد رزق 3">
-            <div class="movie-info">
-                <div class="movie-title">ولاد رزق 3: القاضية</div>
-                <div class="movie-meta">
-                    <span>2024</span>
-                    <span style="color: #f59e0b;">★ 8.8</span>
-                </div>
-            </div>
-        </div>
-
-        <!-- الحريفة -->
-        <div class="movie-card" onclick="selectMovie(this, 'الحريفة', '')">
-            <div class="loading-overlay">جاري التشغيل...</div>
-            <img class="movie-poster" src="images/al-hareefa.jpg" alt="الحريفة">
-            <div class="movie-info">
-                <div class="movie-title">الحريفة</div>
-                <div class="movie-meta">
-                    <span>2024</span>
-                    <span style="color: #f59e0b;">★ 8.4</span>
-                </div>
-            </div>
-        </div>
-
-        <!-- إكس مراتي -->
-        <div class="movie-card" onclick="selectMovie(this, 'إكس مراتي', 'https://vk.com/video_ext.php?oid=760447746&id=456239444')">
-            <div class="loading-overlay">جاري التشغيل...</div>
-            <img class="movie-poster" src="images/ex-meraty.jpg" alt="إكس مراتي">
-            <div class="movie-info">
-                <div class="movie-title">إكس مراتي</div>
-                <div class="movie-meta">
-                    <span>2024</span>
-                    <span style="color: #f59e0b;">★ 8.1</span>
-                </div>
-            </div>
-        </div>
-
-        <!-- بيت الروبي -->
-        <div class="movie-card" onclick="selectMovie(this, 'بيت الروبي', 'https://vk.com/video_ext.php?oid=802052515&id=456241461')">
-            <div class="loading-overlay">جاري التشغيل...</div>
-            <img class="movie-poster" src="images/bait-al-ruby.jpg" alt="بيت الروبي">
-            <div class="movie-info">
-                <div class="movie-title">بيت الروبي</div>
-                <div class="movie-meta">
-                    <span>2023</span>
-                    <span style="color: #f59e0b;">★ 8.0</span>
-                </div>
-            </div>
-        </div>
-
-        <!-- فاصل من اللحظات اللذيذة -->
-        <div class="movie-card" onclick="selectMovie(this, 'فاصل من اللحظات اللذيذة', '')">
-            <div class="loading-overlay">جاري التشغيل...</div>
-            <img class="movie-poster" src="images/fasel.jpg" alt="فاصل من اللحظات اللذيذة">
-            <div class="movie-info">
-                <div class="movie-title">فاصل من اللحظات...</div>
-                <div class="movie-meta">
-                    <span>2024</span>
-                    <span style="color: #f59e0b;">★ 7.9</span>
-                </div>
-            </div>
-        </div>
-
-        <!-- كيرة والجن -->
-        <div class="movie-card" onclick="selectMovie(this, 'كيرة والجن', '')">
-            <div class="loading-overlay">جاري التشغيل...</div>
-            <img class="movie-poster" src="images/kira-wal-gin.jpg" alt="كيرة والجن">
-            <div class="movie-info">
-                <div class="movie-title">كيرة والجن</div>
-                <div class="movie-meta">
-                    <span>2022</span>
-                    <span style="color: #f59e0b;">★ 9.0</span>
-                </div>
-            </div>
-        </div>
+    <div class="movies-grid" id="moviesGrid">
+        <p style="color:#94a3b8; text-align:center; grid-column: 1/-1;">جاري تحميل الأفلام من السيرفر...</p>
     </div>
 
     <!-- نافذة تسجيل الدخول -->
@@ -403,10 +327,59 @@
     </div>
 
     <script>
+        const SUPABASE_API_URL = 'https://pemxbkwlbwuedabsvpzf.supabase.co/rest/v1/movies';
+        const SUPABASE_ANON_KEY = 'ضع_هنا_مفتاح_ANON_KEY'; // استبدل هذا بالمفتاح الخاص بك
+
         let likes = 124;
         let dislikes = 12;
         let isLiked = false;
         let isDisliked = false;
+
+        // جلب البيانات من Supabase
+        async function fetchMovies() {
+            const grid = document.getElementById('moviesGrid');
+            try {
+                const response = await fetch(SUPABASE_API_URL, {
+                    headers: {
+                        'apikey': SUPABASE_ANON_KEY,
+                        'Authorization': `Bearer ${SUPABASE_ANON_KEY}`
+                    }
+                });
+
+                if (!response.ok) {
+                    throw new Error('خطأ في استجابة السيرفر');
+                }
+
+                const movies = await response.json();
+
+                if (movies.length === 0) {
+                    grid.innerHTML = '<p style="color:#94a3b8; text-align:center; grid-column: 1/-1;">لا توجد أفلام مضافة حتى الآن في قاعدة البيانات.</p>';
+                    return;
+                }
+
+                grid.innerHTML = '';
+                movies.forEach(movie => {
+                    grid.innerHTML += `
+                        <div class="movie-card" onclick="selectMovie(this, '${movie.title}', '${movie.video_url}')">
+                            <div class="loading-overlay">جاري التشغيل...</div>
+                            <img class="movie-poster" src="${movie.poster}" alt="${movie.title}">
+                            <div class="movie-info">
+                                <div class="movie-title">${movie.title}</div>
+                                <div class="movie-meta">
+                                    <span>${movie.year}</span>
+                                    <span style="color: #f59e0b;">★ ${movie.rating}</span>
+                                </div>
+                            </div>
+                        </div>
+                    `;
+                });
+            } catch (err) {
+                console.error('Fetch Error:', err);
+                grid.innerHTML = '<p style="color:#e11d48; text-align:center; grid-column: 1/-1;">تعذر تحميل الأفلام، تأكد من إضافة المفتاح (anon key) وإعدادات جدول Supabase.</p>';
+            }
+        }
+
+        window.onload = fetchMovies;
 
         function selectMovie(cardElement, movieTitle, videoUrl) {
             cardElement.classList.add('loading');
